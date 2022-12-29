@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Page,
     Card,
@@ -9,6 +9,9 @@ import {
     Modal,
     ResourceList,
     ResourceItem,
+    Checkbox,
+    Stack,
+    ChoiceList,
 } from "@shopify/polaris";
 import { ViewMajor, EditMajor } from "@shopify/polaris-icons";
 import { TitleBar } from "@shopify/app-bridge-react";
@@ -23,6 +26,7 @@ const EditSeo = () => {
     const [isPagesLoading, setIsPagesLoading] = useState(true);
     const [pageLoading, setPageLoading] = useState(true);
 
+    // get total product count
     const { data, isLoading: isLoadingCount } = useAppQuery({
         url: "/api/products/count",
         reactQueryOptions: {
@@ -33,6 +37,7 @@ const EditSeo = () => {
     });
     console.log(data);
 
+    // get total blog count
     const { data: blogs, isLoading: isLoadingBlogsCount } = useAppQuery({
         url: "/api/blogs/count",
         reactQueryOptions: {
@@ -43,6 +48,7 @@ const EditSeo = () => {
     });
     console.log(blogs);
 
+    // get total page count
     const { data: pages, isLoading: isLoadingPagesCount } = useAppQuery({
         url: "/api/pages/count",
         reactQueryOptions: {
@@ -53,6 +59,7 @@ const EditSeo = () => {
     });
     console.log(pages);
 
+    // get all pages list
     const [allPages, setAllPages] = useState([]);
     const { data: allPagesData, isLoading: isPageLoading } = useAppQuery({
         url: "/api/pages/all",
@@ -63,12 +70,45 @@ const EditSeo = () => {
         },
     });
     console.log("allPages =>", allPages);
-    // console.log("allPages =>", allPagesData);
     useEffect(() => {
         if (allPagesData && allPagesData.length) {
             setAllPages(allPagesData);
         }
     }, [allPagesData]);
+
+    // get all pages list
+    const [allBlogs, setAllBlogs] = useState([]);
+    const { data: allBlogsData, isLoading: isBlogLoading } = useAppQuery({
+        url: "/api/blogs/all",
+        reactQueryOptions: {
+            onSuccess: () => {
+                setPageLoading(false);
+            },
+        },
+    });
+    console.log("allBlogsData =>", allBlogsData);
+    useEffect(() => {
+        if (allBlogsData && allBlogsData.length) {
+            setAllBlogs(allBlogsData);
+        }
+    }, [allBlogsData]);
+
+    // collection api
+    const [collectionCount, setCollectionCount] = useState(0);
+    const { data: allcollectionData, isLoading: isCloLoading } = useAppQuery({
+        url: "/api/collection/all",
+        reactQueryOptions: {
+            onSuccess: () => {
+                setPageLoading(false);
+            },
+        },
+    });
+
+    useEffect(() => {
+        setCollectionCount(allcollectionData.length);
+    }, [allcollectionData]);
+
+    console.log("allcollectionData", allcollectionData);
 
     const [pPicker, setPPicker] = useState(false);
     const [cPicker, setCPicker] = useState(false);
@@ -92,23 +132,31 @@ const EditSeo = () => {
     };
 
     // modal codes
-
     const [active, setActive] = useState(false);
+    const [active2, setActive2] = useState(false);
+    const [selectedPages, setSelectedPages] = useState([]);
+    console.log(selectedPages);
+    const [selectedBlogs, setSelectedBlogs] = useState([]);
+
+    const [pagesSelected, setPagesSelected] = useState(true);
+    console.log(pagesSelected);
+
+    // const handlePages = () => {
+    //     setPagesSelected(!pagesSelected);
+    // };
+
+    // useEffect(() => {
+    //     if (selectedPages) {
+    //         handlePages();
+    //     }
+    // }, [selectedPages]);
 
     const toggleModal = () => {
         setActive(!active);
     };
-    const [active2, setActive2] = useState(false);
 
     const toggleModal2 = () => {
         setActive2(!active2);
-    };
-
-    const [selectedItems, setSelectedItems] = useState([]);
-
-    const resourceName = {
-        singular: "page",
-        plural: "pages",
     };
 
     return (
@@ -183,7 +231,7 @@ const EditSeo = () => {
                             }}
                         >
                             <h1 style={{ fontSize: "55px", fontWeight: 600 }}>
-                                0
+                                {collectionCount}
                             </h1>
                         </div>
                     </Card>
@@ -239,7 +287,7 @@ const EditSeo = () => {
 
                 {/* second row  */}
                 <Layout.Section fullWidth>
-                    <Card sectioned>
+                    {/* <Card sectioned>
                         <div
                             style={{
                                 display: "flex",
@@ -388,8 +436,9 @@ const EditSeo = () => {
                                 </div>
                             </div>
                         </div>
-                    </Card>
+                    </Card> */}
                 </Layout.Section>
+                {/* third row  */}
                 <Layout.Section oneHalf>
                     <Card
                         sectioned
@@ -423,11 +472,11 @@ const EditSeo = () => {
                 </Layout.Section>
             </Layout>
 
-            {/* custom modals  */}
+            {/* custom modals */}
             <Modal
                 open={active}
                 onClose={toggleModal}
-                title="Select Page"
+                title="Select a Page"
                 primaryAction={{
                     content: "Select",
                     // onAction: handleClose,
@@ -439,22 +488,25 @@ const EditSeo = () => {
                     },
                 ]}
             >
-                <Modal.Section>
-                    <ResourceList
-                        resourceName={resourceName}
-                        items={(allPages && allPages) || []}
-                        renderItem={renderItem}
-                        selectedItems={selectedItems}
-                        onSelectionChange={setSelectedItems}
-                        selectable
-                    />
-                </Modal.Section>
+                <ResourceList
+                    resourceName={{
+                        singular: "page",
+                        plural: "pages",
+                    }}
+                    items={(allPages && allPages) || []}
+                    renderItem={renderItem}
+                    selectedItems={selectedPages}
+                    onSelectionChange={setSelectedPages}
+                    selectable={true}
+                    // selectable={pagesSelected}
+                    showHeader={false}
+                />
             </Modal>
 
             <Modal
                 open={active2}
                 onClose={toggleModal2}
-                title="Select Blog Article"
+                title="Select a Blog Article"
                 primaryAction={{
                     content: "Select",
                     // onAction: handleClose,
@@ -466,7 +518,18 @@ const EditSeo = () => {
                     },
                 ]}
             >
-                <Modal.Section></Modal.Section>
+                <ResourceList
+                    resourceName={{
+                        singular: "page",
+                        plural: "pages",
+                    }}
+                    items={(allBlogs && allBlogs) || []}
+                    renderItem={renderItem}
+                    selectedItems={selectedBlogs}
+                    onSelectionChange={setSelectedBlogs}
+                    selectable
+                    showHeader={false}
+                />
             </Modal>
         </Page>
     );
@@ -477,7 +540,7 @@ const EditSeo = () => {
         return (
             <ResourceItem
                 id={id}
-                accessibilityLabel={`View details for ${title}`}
+                accessibilityLabel={`Edit SEO for ${title}`}
             >
                 <Heading>{title}</Heading>
             </ResourceItem>

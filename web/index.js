@@ -88,8 +88,22 @@ app.put("/api/product/update", async (_req, res) => {
     }
 });
 
+// all blogs apis
 app.get("/api/blogs/count", async (_req, res) => {
     const countData = await shopify.api.rest.Blog.count({
+        session: res.locals.shopify.session,
+    });
+    res.status(200).send(countData);
+});
+
+app.get("/api/blogs/all", async (_req, res) => {
+    const countData = await shopify.api.rest.Blog.all({
+        session: res.locals.shopify.session,
+    });
+    res.status(200).send(countData);
+});
+app.get("/api/collection/all", async (_req, res) => {
+    const countData = await shopify.api.rest.CustomCollection.all({
         session: res.locals.shopify.session,
     });
     res.status(200).send(countData);
