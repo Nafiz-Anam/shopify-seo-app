@@ -105,7 +105,8 @@ const EditSeo = () => {
     });
 
     useEffect(() => {
-        setCollectionCount(allcollectionData.length);
+        if (allcollectionData && allcollectionData.length)
+            setCollectionCount(allcollectionData.length);
     }, [allcollectionData]);
 
     console.log("allcollectionData", allcollectionData);
@@ -538,10 +539,7 @@ const EditSeo = () => {
         const { id, title } = item;
 
         return (
-            <ResourceItem
-                id={id}
-                accessibilityLabel={`Edit SEO for ${title}`}
-            >
+            <ResourceItem id={id} accessibilityLabel={`Edit SEO for ${title}`}>
                 <Heading>{title}</Heading>
             </ResourceItem>
         );
