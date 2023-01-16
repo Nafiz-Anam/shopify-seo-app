@@ -59,7 +59,7 @@ app.get("/api/products/create", async (_req, res) => {
 
 // update product meta title & description
 app.put("/api/product/update", async (_req, res) => {
-    console.log("body =>", _req.body);
+    // console.log("body =>", _req.body);
     try {
         const product = new shopify.api.rest.Product({
             session: res.locals.shopify.session,
@@ -102,12 +102,6 @@ app.get("/api/blogs/all", async (_req, res) => {
     });
     res.status(200).send(countData);
 });
-app.get("/api/collection/all", async (_req, res) => {
-    const countData = await shopify.api.rest.CustomCollection.all({
-        session: res.locals.shopify.session,
-    });
-    res.status(200).send(countData);
-});
 
 // all page APIs
 app.get("/api/pages/all", async (_req, res) => {
@@ -130,6 +124,68 @@ app.get("/api/collection/count", async (_req, res) => {
         session: res.locals.shopify.session,
     });
     res.status(200).send(countData);
+});
+
+app.get("/api/collection/all", async (_req, res) => {
+    const countData = await shopify.api.rest.CustomCollection.all({
+        session: res.locals.shopify.session,
+    });
+    res.status(200).send(countData);
+});
+
+// all script tag apis
+app.post("/api/script/add", async (_req, res) => {
+    console.log("hitted => ");
+    // try {
+    //     const script_tag = new shopify.api.rest.ScriptTag({
+    //         session: res.locals.shopify.session,
+    //     });
+    //     console.log("script_tag", script_tag);
+    //     script_tag.event = "onload";
+    //     script_tag.src = "https://nafizanam.com/pd-script.js";
+
+    //     const resultData = await script_tag.save({
+    //         update: true,
+    //     });
+
+    //     console.log("resultData", resultData);
+    //     res.status(200).json({
+    //         status: true,
+    //         message: "Script added",
+    //     });
+    // } catch (error) {
+    //     console.log("error =>", error);
+    //     // throw error;
+    //     res.status(500).json({
+    //         status: false,
+    //         message: "Failed to add script",
+    //     });
+    // }
+});
+
+app.get("/api/script/all", async (_req, res) => {
+    const countData = await shopify.api.rest.ScriptTag.all({
+        session: res.locals.shopify.session,
+    });
+    res.status(200).send(countData);
+});
+
+app.get("/api/theme/all", async (_req, res) => {
+    const themeData = await shopify.api.rest.Theme.all({
+        session: res.locals.shopify.session,
+    });
+    console.log("=>", themeData);
+    res.status(200).send(themeData);
+});
+
+app.get("/api/assets/all", async (_req, res) => {
+    const themeTemplate = await shopify.api.rest.Asset.all({
+        session: res.locals.shopify.session,
+        theme_id: 140028215591,
+        asset: { key: "sections/main-product.liquid" },
+    });
+    console.log("themeTemplate => ", themeTemplate);
+    res.status(200).send(themeTemplate);
 });
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
