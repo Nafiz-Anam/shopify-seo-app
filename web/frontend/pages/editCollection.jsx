@@ -27,20 +27,23 @@ const editproduct = () => {
     const handleDescChange = useCallback((value) => setDescValue(value), []);
 
     const [loading, setLoading] = useState(false);
-    const productInfo = JSON.parse(localStorage.getItem("productInfo"));
-    const product_id = productInfo.selection[0].id.split("/").slice(-1)[0];
-    // console.log(productInfo.selection[0].id.split("/").slice(-1)[0]);
+    const collectionInfo = JSON.parse(localStorage.getItem("collectionInfo"));
+    // console.log(collectionInfo);
+    const collection_id = collectionInfo.selection[0].id
+        .split("/")
+        .slice(-1)[0];
+    // console.log(collection_id);
 
     const onSubmit = async (data) => {
         setLoading(true);
         data.keyword = textFieldValue;
-        data.product_id = product_id;
+        data.collection_id = collection_id;
         data.product_title = titleValue;
         data.product_description = descValue;
         console.log("form entry => ", data);
 
         const method = "PUT";
-        const response = await fetch("/api/product/update", {
+        const response = await fetch("/api/collection/update", {
             method,
             body: JSON.stringify(data),
             headers: { "Content-Type": "application/json" },
@@ -56,7 +59,7 @@ const editproduct = () => {
         <Page
             fullWidth
             breadcrumbs={[{ content: "Edit SEO", url: "/editseo" }]}
-            title="Edit Products"
+            title="Edit Collection"
         >
             <TitleBar disabled />
             <form onSubmit={handleSubmit(onSubmit)}>

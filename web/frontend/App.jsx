@@ -33,6 +33,10 @@ export default function App() {
                                     label: "Edit Seo",
                                     destination: "/editseo",
                                 },
+                                {
+                                    label: "Code Page",
+                                    destination: "/codepage",
+                                },
                             ]}
                         />
                         <Routes pages={pages} />

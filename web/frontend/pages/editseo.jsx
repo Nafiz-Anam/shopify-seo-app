@@ -38,15 +38,15 @@ const EditSeo = () => {
     console.log(data);
 
     // get total blog count
-    const { data: blogs, isLoading: isLoadingBlogsCount } = useAppQuery({
-        url: "/api/blogs/count",
-        reactQueryOptions: {
-            onSuccess: () => {
-                setIsBlogsLoading(false);
-            },
-        },
-    });
-    console.log(blogs);
+    // const { data: blogs, isLoading: isLoadingBlogsCount } = useAppQuery({
+    //     url: "/api/blogs/count",
+    //     reactQueryOptions: {
+    //         onSuccess: () => {
+    //             setIsBlogsLoading(false);
+    //         },
+    //     },
+    // });
+    // console.log(blogs);
 
     // get total page count
     const { data: pages, isLoading: isLoadingPagesCount } = useAppQuery({
@@ -122,13 +122,15 @@ const EditSeo = () => {
     };
 
     const handleProSelections = (resources) => {
-        console.log("resources", resources);
+        // console.log("resources", resources);
         localStorage.setItem("productInfo", JSON.stringify(resources));
         navigate("/editproduct");
         setPPicker(false);
     };
     const handleColSelections = (resources) => {
-        console.log("resources", resources);
+        // console.log("resources", resources);
+        localStorage.setItem("collectionInfo", JSON.stringify(resources));
+        navigate("/editCollection");
         setCPicker(false);
     };
 
@@ -139,18 +141,28 @@ const EditSeo = () => {
     console.log(selectedPages);
     const [selectedBlogs, setSelectedBlogs] = useState([]);
 
+    const handleBlogs = (data) => {
+        console.log("data", data);
+    };
+
     const [pagesSelected, setPagesSelected] = useState(true);
     console.log(pagesSelected);
 
-    // const handlePages = () => {
-    //     setPagesSelected(!pagesSelected);
-    // };
+    const handlePages = () => {
+        localStorage.setItem(
+            "pageInfo",
+            JSON.stringify({ page_id: selectedPages })
+        );
+        navigate("/editpage");
+    };
 
-    // useEffect(() => {
-    //     if (selectedPages) {
-    //         handlePages();
-    //     }
-    // }, [selectedPages]);
+    const handleblogs = () => {
+        localStorage.setItem(
+            "blogInfo",
+            JSON.stringify({ blog_id: selectedBlogs })
+        );
+        navigate("/editBlog");
+    };
 
     const toggleModal = () => {
         setActive(!active);
@@ -280,7 +292,7 @@ const EditSeo = () => {
                             }}
                         >
                             <h1 style={{ fontSize: "55px", fontWeight: 600 }}>
-                                {isLoadingBlogsCount ? "-" : blogs.count}
+                                {isBlogLoading ? "-" : allBlogs.length}
                             </h1>
                         </div>
                     </Card>
@@ -480,12 +492,12 @@ const EditSeo = () => {
                 title="Select a Page"
                 primaryAction={{
                     content: "Select",
-                    // onAction: handleClose,
+                    onAction: handlePages,
                 }}
                 secondaryActions={[
                     {
                         content: "Cancel",
-                        // onAction: handleClose,
+                        onAction: toggleModal,
                     },
                 ]}
             >
@@ -510,12 +522,12 @@ const EditSeo = () => {
                 title="Select a Blog Article"
                 primaryAction={{
                     content: "Select",
-                    // onAction: handleClose,
+                    onAction: handleblogs,
                 }}
                 secondaryActions={[
                     {
                         content: "Cancel",
-                        // onAction: handleClose,
+                        onAction: toggleModal2,
                     },
                 ]}
             >

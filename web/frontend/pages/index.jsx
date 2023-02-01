@@ -1,17 +1,5 @@
-import {
-    Card,
-    Page,
-    Layout,
-    TextContainer,
-    Image,
-    Stack,
-    Link,
-    Heading,
-} from "@shopify/polaris";
+import { Page, Layout } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
-
-import { trophyImage } from "../assets";
-
 import { ProductsCard } from "../components";
 import { useEffect, useState } from "react";
 import { useAppQuery, useAuthenticatedFetch } from "../hooks";
@@ -19,38 +7,18 @@ import { useAppQuery, useAuthenticatedFetch } from "../hooks";
 export default function HomePage() {
     const fetch = useAuthenticatedFetch();
     const [added, setAdded] = useState(false);
+
     // collection api
     const [collectionCount, setCollectionCount] = useState(0);
-    const { data: allcollectionData, isLoading: isCloLoading } = useAppQuery({
-        url: "/api/script/all",
-        reactQueryOptions: {
-            onSuccess: () => {
-                setPageLoading(false);
-            },
-        },
-    });
-    console.log("allscriptData", allcollectionData);
-
-    const [templateData, setTemplateData] = useState("");
-    const { data: getTheme, isLoading: themeLoading } = useAppQuery({
-        url: "/api/theme/all",
-        reactQueryOptions: {
-            onSuccess: () => {
-                setPageLoading(false);
-            },
-        },
-    });
-    console.log("getTheme", getTheme);
-
-    const { data: getTemplateData, isLoading } = useAppQuery({
-        url: "/api/assets/all",
-        reactQueryOptions: {
-            onSuccess: () => {
-                setPageLoading(false);
-            },
-        },
-    });
-    console.log("getTemplateData", getTemplateData);
+    // const { data: allcollectionData, isLoading: isCloLoading } = useAppQuery({
+    //     url: "/api/script/all",
+    //     reactQueryOptions: {
+    //         onSuccess: () => {
+    //             setPageLoading(false);
+    //         },
+    //     },
+    // });
+    // console.log("allscriptData", allcollectionData);
 
     // apply script tag
     const trigger = async () => {
@@ -62,6 +30,20 @@ export default function HomePage() {
         });
         console.log("api response => ", response);
     };
+
+    // const triggerDelete = async () => {
+    //     const method = "DELETE";
+    //     const response = await fetch("/api/script/delete", {
+    //         method,
+    //         body: JSON.stringify({ data: "data" }),
+    //         headers: { "Content-Type": "application/json" },
+    //     });
+    //     console.log("api response => ", response);
+    // };
+
+    // useEffect(() => {
+    //     triggerDelete();
+    // }, []);
 
     useEffect(() => {
         if (added) {

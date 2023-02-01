@@ -1,13 +1,11 @@
 import { TitleBar } from "@shopify/app-bridge-react";
-import { Card, Heading, Icon, Layout, Page, TextField } from "@shopify/polaris";
+import { Card, Heading, Layout, Page, TextField } from "@shopify/polaris";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TickMinor } from "@shopify/polaris-icons";
-import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
-import { useAppQuery, useAuthenticatedFetch } from "../hooks";
+import { useAuthenticatedFetch } from "../hooks";
 
-const editproduct = () => {
+const editpage = () => {
     const fetch = useAuthenticatedFetch();
     const {
         register,
@@ -18,7 +16,7 @@ const editproduct = () => {
     const [textFieldValue, setTextFieldValue] = useState("");
     const [titleValue, setTitleValue] = useState("");
     const [descValue, setDescValue] = useState("");
-
+    const [loading, setLoading] = useState(false);
     const handleKeywordChange = useCallback(
         (value) => setTextFieldValue(value),
         []
@@ -26,21 +24,21 @@ const editproduct = () => {
     const handleTitleChange = useCallback((value) => setTitleValue(value), []);
     const handleDescChange = useCallback((value) => setDescValue(value), []);
 
-    const [loading, setLoading] = useState(false);
-    const productInfo = JSON.parse(localStorage.getItem("productInfo"));
-    const product_id = productInfo.selection[0].id.split("/").slice(-1)[0];
-    // console.log(productInfo.selection[0].id.split("/").slice(-1)[0]);
+    const pageInfo = JSON.parse(localStorage.getItem("pageInfo"));
+    // console.log(pageInfo);
+    const page_id = pageInfo.page_id[0];
+    // console.log(pageInfo.page_id[0]);
 
     const onSubmit = async (data) => {
         setLoading(true);
         data.keyword = textFieldValue;
-        data.product_id = product_id;
-        data.product_title = titleValue;
-        data.product_description = descValue;
+        data.page_id = page_id;
+        data.page_title = titleValue;
+        data.page_description = descValue;
         console.log("form entry => ", data);
 
         const method = "PUT";
-        const response = await fetch("/api/product/update", {
+        const response = await fetch("/api/pages/update", {
             method,
             body: JSON.stringify(data),
             headers: { "Content-Type": "application/json" },
@@ -56,7 +54,7 @@ const editproduct = () => {
         <Page
             fullWidth
             breadcrumbs={[{ content: "Edit SEO", url: "/editseo" }]}
-            title="Edit Products"
+            title="Edit Page"
         >
             <TitleBar disabled />
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -180,4 +178,4 @@ const editproduct = () => {
     );
 };
 
-export default editproduct;
+export default editpage;

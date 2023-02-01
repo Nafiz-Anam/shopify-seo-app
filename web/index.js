@@ -100,8 +100,67 @@ app.get("/api/blogs/all", async (_req, res) => {
     const countData = await shopify.api.rest.Blog.all({
         session: res.locals.shopify.session,
     });
-    res.status(200).send(countData);
+    // console.log(countData);
+    let blogsData = [];
+    for (let item of countData) {
+        const result = await shopify.api.rest.Article.all({
+            session: res.locals.shopify.session,
+            blog_id: item.id,
+        });
+        // console.log(result);
+        blogsData.push(...result);
+    }
+    console.log("blogsData =>", blogsData);
+    console.log("blogsData count =>", blogsData.length);
+
+    res.status(200).send(blogsData);
 });
+
+app.put("/api/article/update", async (_req, res) => {
+    // console.log("body =>", _req.body);
+    try {
+        const article = new shopify.api.rest.Article({
+            session: res.locals.shopify.session,
+        });
+        console.log("Article session =>", article);
+        // adding new data to specific product
+        article.blog_id = 241253187;
+        article.id = _req.body.product_id;
+        article.metafields_global_title_tag = _req.body.product_title;
+        article.metafields_global_description_tag =
+            _req.body.product_description;
+        // saving product with new data
+        await article.save({
+            update: true,
+        });
+        res.status(200).json({
+            status: true,
+            message: "Article meta data updated",
+        });
+    } catch (error) {
+        console.log("error =>", error);
+        // throw error;
+        res.status(500).json({
+            status: false,
+            message: "Failed to update Article meta data",
+        });
+    }
+});
+
+// articles
+// app.get("/api/article/count", async (_req, res) => {
+//     const countData = await shopify.api.rest.Article.count({
+//         session: res.locals.shopify.session,
+//     });
+//     res.status(200).send(countData);
+// });
+
+// app.get("/api/article/all", async (_req, res) => {
+//     const countData = await shopify.api.rest.Article.all({
+//         session: res.locals.shopify.session,
+//     });
+//     res.status(200).send(countData);
+// });
 
 // all page APIs
 app.get("/api/pages/all", async (_req, res) => {
@@ -116,6 +175,35 @@ app.get("/api/pages/count", async (_req, res) => {
         session: res.locals.shopify.session,
     });
     res.status(200).send(countData);
+});
+
+app.put("/api/pages/update", async (_req, res) => {
+    console.log("body =>", _req.body);
+    try {
+        const page = new shopify.api.rest.Page({
+            session: res.locals.shopify.session,
+        });
+        // console.log("page session =>", page);
+        // adding new data to specific page
+        page.id = _req.body.page_id;
+        page.metafields_global_title_tag = _req.body.product_title;
+        page.metafields_global_description_tag = _req.body.product_description;
+        // saving product with new data
+        await page.save({
+            update: true,
+        });
+        res.status(200).json({
+            status: true,
+            message: "Page meta data updated",
+        });
+    } catch (error) {
+        console.log("error =>", error);
+        // throw error;
+        res.status(500).json({
+            status: false,
+            message: "Failed to update page meta data",
+        });
+    }
 });
 
 // all collections APIs
@@ -133,9 +221,48 @@ app.get("/api/collection/all", async (_req, res) => {
     res.status(200).send(countData);
 });
 
-// all script tag apis
+app.put("/api/collection/update", async (_req, res) => {
+    // console.log("body =>", _req.body);
+    try {
+        const custom_collection = new shopify.api.rest.CustomCollection({
+            session: res.locals.shopify.session,
+        });
+        console.log("collection session =>", custom_collection);
+        // adding new data to specific product
+        // custom_collection.id = 841564295;
+        // custom_collection.metafields = [
+        //     {
+        //         key: "new",
+        //         value: "newvalue",
+        //         type: "single_line_text_field",
+        //         namespace: "global",
+        //     },
+        // ];
+        custom_collection.id = _req.body.collection_id;
+        custom_collection.metafields_global_title_tag =
+            "_req.body.product_title";
+        custom_collection.metafields_global_description_tag =
+            "_req.body.product_description";
+        // saving product with new data
+        await custom_collection.save({
+            update: true,
+        });
+        res.status(200).json({
+            status: true,
+            message: "Custom collection meta data updated",
+        });
+    } catch (error) {
+        console.log("error =>", error);
+        // throw error;
+        res.status(500).json({
+            status: false,
+            message: "Failed to update custom collection meta data",
+        });
+    }
+});
+
+// add script tag
 app.post("/api/script/add", async (_req, res) => {
-    console.log("hitted => ");
     // try {
     //     const script_tag = new shopify.api.rest.ScriptTag({
     //         session: res.locals.shopify.session,
@@ -143,11 +270,9 @@ app.post("/api/script/add", async (_req, res) => {
     //     console.log("script_tag", script_tag);
     //     script_tag.event = "onload";
     //     script_tag.src = "https://nafizanam.com/pd-script.js";
-
     //     const resultData = await script_tag.save({
     //         update: true,
     //     });
-
     //     console.log("resultData", resultData);
     //     res.status(200).json({
     //         status: true,
@@ -163,28 +288,42 @@ app.post("/api/script/add", async (_req, res) => {
     // }
 });
 
+// get all script list
 app.get("/api/script/all", async (_req, res) => {
-    const countData = await shopify.api.rest.ScriptTag.all({
+    const scriptData = await shopify.api.rest.ScriptTag.all({
         session: res.locals.shopify.session,
     });
-    res.status(200).send(countData);
+    console.log(scriptData);
+    res.status(200).send(scriptData);
 });
 
+// delete a script tag from code
+// app.delete("/api/script/delete", async (_req, res) => {
+//     const scriptData = await shopify.api.rest.ScriptTag.delete({
+//         session: res.locals.shopify.session,
+//         id: 223750553895,
+//     });
+//     console.log(scriptData);
+//     res.status(200).send(scriptData);
+// });
+
+// get all theme id in array
 app.get("/api/theme/all", async (_req, res) => {
     const themeData = await shopify.api.rest.Theme.all({
         session: res.locals.shopify.session,
     });
-    console.log("=>", themeData);
+    // console.log("=>", themeData);
     res.status(200).send(themeData);
 });
 
+// get a single page full code by path
 app.get("/api/assets/all", async (_req, res) => {
     const themeTemplate = await shopify.api.rest.Asset.all({
         session: res.locals.shopify.session,
         theme_id: 140028215591,
         asset: { key: "sections/main-product.liquid" },
     });
-    console.log("themeTemplate => ", themeTemplate);
+    // console.log("themeTemplate => ", themeTemplate);
     res.status(200).send(themeTemplate);
 });
 
