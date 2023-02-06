@@ -1,13 +1,13 @@
 import { TitleBar } from "@shopify/app-bridge-react";
-import { Card, Heading, Icon, Layout, Page, TextField } from "@shopify/polaris";
+import { Card, Heading, Layout, Page, TextField } from "@shopify/polaris";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TickMinor } from "@shopify/polaris-icons";
-import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
-import { useAppQuery, useAuthenticatedFetch } from "../hooks";
+import { useAuthenticatedFetch } from "../hooks";
+import { useNavigate } from "react-router-dom";
 
-const editproduct = () => {
+const Editproduct = () => {
+    const navigate = useNavigate();
     const fetch = useAuthenticatedFetch();
     const {
         register,
@@ -48,6 +48,7 @@ const editproduct = () => {
         console.log("api response => ", response);
         if (response.ok) {
             setLoading(false);
+            navigate("/editseo");
         }
     };
     // console.log("form err => ", errors);
@@ -173,11 +174,12 @@ const editproduct = () => {
                         cursor: "pointer",
                     }}
                     type="submit"
-                    value="Save"
+                    value={loading ? "Loading..." : "Save"}
+                    disabled={loading ? true : false}
                 />
             </form>
         </Page>
     );
 };
 
-export default editproduct;
+export default Editproduct;

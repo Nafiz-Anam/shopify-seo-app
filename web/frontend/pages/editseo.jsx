@@ -1,19 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Page,
     Card,
     Layout,
     Heading,
     TextContainer,
-    Button,
     Modal,
     ResourceList,
     ResourceItem,
-    Checkbox,
-    Stack,
-    ChoiceList,
 } from "@shopify/polaris";
-import { ViewMajor, EditMajor } from "@shopify/polaris-icons";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useAppQuery } from "../hooks";
 import { ResourcePicker } from "@shopify/app-bridge-react";
@@ -70,6 +65,7 @@ const EditSeo = () => {
         },
     });
     console.log("allPages =>", allPages);
+    
     useEffect(() => {
         if (allPagesData && allPagesData.length) {
             setAllPages(allPagesData);

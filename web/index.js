@@ -100,7 +100,7 @@ app.get("/api/blogs/all", async (_req, res) => {
     const countData = await shopify.api.rest.Blog.all({
         session: res.locals.shopify.session,
     });
-    // console.log(countData);
+    console.log(countData);
     let blogsData = [];
     for (let item of countData) {
         const result = await shopify.api.rest.Article.all({
@@ -110,22 +110,22 @@ app.get("/api/blogs/all", async (_req, res) => {
         // console.log(result);
         blogsData.push(...result);
     }
-    console.log("blogsData =>", blogsData);
-    console.log("blogsData count =>", blogsData.length);
+    // console.log("blogsData =>", blogsData);
+    // console.log("blogsData count =>", blogsData.length);
 
     res.status(200).send(blogsData);
 });
 
 app.put("/api/article/update", async (_req, res) => {
-    // console.log("body =>", _req.body);
+    console.log("body =>", _req.body);
     try {
         const article = new shopify.api.rest.Article({
             session: res.locals.shopify.session,
         });
-        console.log("Article session =>", article);
+        // console.log("Article session =>", article);
         // adding new data to specific product
-        article.blog_id = 241253187;
-        article.id = _req.body.product_id;
+        article.blog_id = _req.body.blog_id;
+        article.id = _req.body.article_id;
         article.metafields_global_title_tag = _req.body.product_title;
         article.metafields_global_description_tag =
             _req.body.product_description;
@@ -167,6 +167,7 @@ app.get("/api/pages/all", async (_req, res) => {
     const countData = await shopify.api.rest.Page.all({
         session: res.locals.shopify.session,
     });
+    // console.log("pages all", countData);
     res.status(200).send(countData);
 });
 
@@ -178,7 +179,7 @@ app.get("/api/pages/count", async (_req, res) => {
 });
 
 app.put("/api/pages/update", async (_req, res) => {
-    console.log("body =>", _req.body);
+    // console.log("body =>", _req.body);
     try {
         const page = new shopify.api.rest.Page({
             session: res.locals.shopify.session,
@@ -208,7 +209,7 @@ app.put("/api/pages/update", async (_req, res) => {
 
 // all collections APIs
 app.get("/api/collection/count", async (_req, res) => {
-    const countData = await shopify.api.rest.Collect.count({
+    const countData = await shopify.api.rest.CustomCollection.count({
         session: res.locals.shopify.session,
     });
     res.status(200).send(countData);
@@ -218,31 +219,42 @@ app.get("/api/collection/all", async (_req, res) => {
     const countData = await shopify.api.rest.CustomCollection.all({
         session: res.locals.shopify.session,
     });
+    console.log("collection data", countData);
     res.status(200).send(countData);
 });
 
 app.put("/api/collection/update", async (_req, res) => {
-    // console.log("body =>", _req.body);
+    console.log("body =>", _req.body);
     try {
         const custom_collection = new shopify.api.rest.CustomCollection({
             session: res.locals.shopify.session,
         });
         console.log("collection session =>", custom_collection);
-        // adding new data to specific product
-        // custom_collection.id = 841564295;
-        // custom_collection.metafields = [
-        //     {
-        //         key: "new",
-        //         value: "newvalue",
-        //         type: "single_line_text_field",
-        //         namespace: "global",
-        //     },
-        // ];
         custom_collection.id = _req.body.collection_id;
-        custom_collection.metafields_global_title_tag =
-            "_req.body.product_title";
-        custom_collection.metafields_global_description_tag =
-            "_req.body.product_description";
+
+        custom_collection.metafields = [
+            {
+                key: "title",
+                value: "collection meta title here",
+                type: "single_line_text_field",
+                namespace: "global",
+            },
+            {
+                key: "description",
+                value: "collection meta description here",
+                type: "single_line_text_field",
+                namespace: "global",
+            },
+        ];
+
+        // custom_collection.metafields_global_title_tag = "collection meta title";
+        // custom_collection.metafields_global_description_tag =
+        //     "collection meta description";
+
+        // custom_collection.metafields_global_title_tag = _req.body.product_title;
+        // custom_collection.metafields_global_description_tag =
+        //     _req.body.product_description;
+        console.log(custom_collection);
         // saving product with new data
         await custom_collection.save({
             update: true,

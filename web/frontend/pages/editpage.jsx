@@ -4,8 +4,10 @@ import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { RxCross2 } from "react-icons/rx";
 import { useAuthenticatedFetch } from "../hooks";
+import { useNavigate } from "react-router-dom";
 
-const editpage = () => {
+const Editpage = () => {
+    const navigate = useNavigate();
     const fetch = useAuthenticatedFetch();
     const {
         register,
@@ -46,6 +48,7 @@ const editpage = () => {
         console.log("api response => ", response);
         if (response.ok) {
             setLoading(false);
+            navigate("/editseo");
         }
     };
     // console.log("form err => ", errors);
@@ -171,11 +174,12 @@ const editpage = () => {
                         cursor: "pointer",
                     }}
                     type="submit"
-                    value="Save"
+                    value={loading ? "Loading..." : "Save"}
+                    disabled={loading ? true : false}
                 />
             </form>
         </Page>
     );
 };
 
-export default editpage;
+export default Editpage;

@@ -1,13 +1,13 @@
 import { TitleBar } from "@shopify/app-bridge-react";
-import { Card, Heading, Icon, Layout, Page, TextField } from "@shopify/polaris";
-import React, { useCallback, useState } from "react";
+import { Card, Heading, Layout, Page, TextField } from "@shopify/polaris";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TickMinor } from "@shopify/polaris-icons";
-import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import { useAppQuery, useAuthenticatedFetch } from "../hooks";
+import { useNavigate } from "react-router-dom";
 
-const editproduct = () => {
+const Editproduct = () => {
+    const navigate = useNavigate();
     const fetch = useAuthenticatedFetch();
     const {
         register,
@@ -29,18 +29,48 @@ const editproduct = () => {
     const [loading, setLoading] = useState(false);
     const blogInfo = JSON.parse(localStorage.getItem("blogInfo"));
     const blog_id = blogInfo.blog_id[0];
+    console.log("blog_id", blog_id);
+    const [filteredId, setFilteredId] = useState(null);
+    console.log("filteredId", filteredId);
+
     // console.log(productInfo.selection[0].id.split("/").slice(-1)[0]);
+
+    // get all pages list
+    const [allBlogs, setAllBlogs] = useState([]);
+    const [pageLoading, setPageLoading] = useState(true);
+    const { data: allBlogsData, isLoading: isBlogLoading } = useAppQuery({
+        url: "/api/blogs/all",
+        reactQueryOptions: {
+            onSuccess: () => {
+                setPageLoading(false);
+            },
+        },
+    });
+    useEffect(() => {
+        if (allBlogsData && allBlogsData.length) {
+            setAllBlogs(allBlogsData);
+        }
+    }, [allBlogsData]);
+    console.log("allBlogsData =>", allBlogs);
+
+    useEffect(() => {
+        if (allBlogs.length && blog_id) {
+            const blog = allBlogs.filter((items) => items.id === blog_id);
+            setFilteredId(blog[0].blog_id);
+        }
+    }, [allBlogs, blog_id]);
 
     const onSubmit = async (data) => {
         setLoading(true);
         data.keyword = textFieldValue;
-        data.blog_id = blog_id;
+        data.blog_id = filteredId;
+        data.article_id = blog_id;
         data.product_title = titleValue;
         data.product_description = descValue;
         console.log("form entry => ", data);
 
         const method = "PUT";
-        const response = await fetch("/api/blog/update", {
+        const response = await fetch("/api/article/update", {
             method,
             body: JSON.stringify(data),
             headers: { "Content-Type": "application/json" },
@@ -48,6 +78,7 @@ const editproduct = () => {
         console.log("api response => ", response);
         if (response.ok) {
             setLoading(false);
+            navigate("/editseo");
         }
     };
     // console.log("form err => ", errors);
@@ -173,11 +204,12 @@ const editproduct = () => {
                         cursor: "pointer",
                     }}
                     type="submit"
-                    value="Save"
+                    value={loading ? "Loading..." : "Save"}
+                    disabled={loading ? true : false}
                 />
             </form>
         </Page>
     );
 };
 
-export default editproduct;
+export default Editproduct;
